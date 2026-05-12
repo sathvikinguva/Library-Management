@@ -5,6 +5,7 @@ import com.librarymanagement.backend.dto.MemberRequestDto;
 import com.librarymanagement.backend.dto.MemberResponseDto;
 import com.librarymanagement.backend.entity.IssueRecord;
 import com.librarymanagement.backend.entity.User;
+import com.librarymanagement.backend.enums.Role;
 import com.librarymanagement.backend.exception.BusinessException;
 import com.librarymanagement.backend.exception.ResourceNotFoundException;
 import com.librarymanagement.backend.repository.IssueRecordRepository;
@@ -33,7 +34,7 @@ public class MemberService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
-        user.setRole("MEMBER");
+        user.setRole(Role.MEMBER);
         return toDto(userRepository.save(user));
     }
 
@@ -62,7 +63,7 @@ public class MemberService {
                 .userId(user.getUserId())
                 .name(user.getName())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .createdAt(user.getCreatedAt())
                 .build();
     }
