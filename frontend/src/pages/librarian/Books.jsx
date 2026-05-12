@@ -14,6 +14,9 @@ const LibrarianBooks = () => {
   const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", author: "" });
+  const titleRegex = /^[A-Za-z0-9][A-Za-z0-9\s.'-]{1,98}$/;
+  const authorRegex = /^[A-Za-z][A-Za-z\s.'-]{1,98}$/;
+  const searchRegex = /^[A-Za-z0-9\s.'-]*$/;
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -34,7 +37,28 @@ const LibrarianBooks = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const newBook = await bookService.addBook(form);
+    if (!titleRegex.test(form.title.trim())) {
+      addToast({
+        title: "Invalid title",
+        message: "Use 2-99 characters (letters, numbers, spaces).",
+        tone: "error"
+      });
+      return;
+    }
+
+    if (!authorRegex.test(form.author.trim())) {
+      addToast({
+        title: "Invalid author",
+        message: "Use 2-99 letters for the author name.",
+        tone: "error"
+      });
+      return;
+    }
+    const payload = {
+      title: form.title.trim(),
+      author: form.author.trim()
+    };
+    const newBook = await bookService.addBook(payload);
     setBooks((prev) => [newBook, ...prev]);
     addToast({ title: "Book added", message: newBook.title, tone: "success" });
     setOpen(false);
@@ -52,6 +76,7 @@ const LibrarianBooks = () => {
           value={search}
           onChange={setSearch}
           placeholder="Search by title or author"
+          validationRegex={searchRegex}
         />
         <button
           onClick={() => setOpen(true)}
@@ -95,6 +120,8 @@ const LibrarianBooks = () => {
               value={form.title}
               onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
               className="mt-2 w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-sm"
+              pattern={titleRegex.source}
+              title="2-99 characters, letters and numbers"
               required
             />
           </div>
@@ -104,6 +131,8 @@ const LibrarianBooks = () => {
               value={form.author}
               onChange={(event) => setForm((prev) => ({ ...prev, author: event.target.value }))}
               className="mt-2 w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-sm"
+              pattern={authorRegex.source}
+              title="2-99 letters"
               required
             />
           </div>

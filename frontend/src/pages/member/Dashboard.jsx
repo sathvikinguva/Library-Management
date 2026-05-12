@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import IssueTable from "../../components/IssueTable.jsx";
 import StatsCard from "../../components/StatsCard.jsx";
 import Loader from "../../components/Loader.jsx";
-import issueService from "../../services/issueService.js";
 import bookService from "../../services/bookService.js";
+import memberService from "../../services/memberService.js";
 import { useAuth } from "../../hooks/useAuth.js";
 
 const MemberDashboard = () => {
@@ -15,7 +15,7 @@ const MemberDashboard = () => {
   useEffect(() => {
     const loadData = async () => {
       const [issueData, bookData] = await Promise.all([
-        issueService.getIssues(),
+        memberService.getMemberIssues(user.userId),
         bookService.getBooks()
       ]);
       setIssues(issueData);
@@ -28,9 +28,9 @@ const MemberDashboard = () => {
 
   const myIssues = useMemo(() => {
     return issues
-      .filter((issue) => issue.member_id === user.user_id)
+      .filter((issue) => issue.memberId === user.userId)
       .map((issue) => {
-        const book = books.find((item) => item.book_id === issue.book_id);
+        const book = books.find((item) => item.bookId === issue.bookId);
         return {
           ...issue,
           bookTitle: book?.title || "Unknown",
@@ -39,7 +39,7 @@ const MemberDashboard = () => {
       });
   }, [issues, books, user]);
 
-  const activeCount = myIssues.filter((issue) => !issue.return_date).length;
+  const activeCount = myIssues.filter((issue) => !issue.returnDate).length;
 
   if (loading) {
     return <Loader label="Loading dashboard" />;

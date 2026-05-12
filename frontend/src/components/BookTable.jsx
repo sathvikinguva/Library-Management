@@ -13,7 +13,7 @@ const BookTable = ({ books }) => {
         </thead>
         <tbody className="divide-y divide-slate-800 bg-slate-900/30">
           {books.map((book) => (
-            <tr key={book.book_id} className="hover:bg-slate-900/60">
+            <tr key={book.bookId} className="hover:bg-slate-900/60">
               <td className="px-5 py-4 text-white">{book.title}</td>
               <td className="px-5 py-4 text-slate-300">{book.author}</td>
               <td className="px-5 py-4">

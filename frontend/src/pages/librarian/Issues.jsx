@@ -19,12 +19,13 @@ const LibrarianIssues = () => {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [confirmIssue, setConfirmIssue] = useState(null);
-  const [form, setForm] = useState({ member_id: "", book_id: "" });
+  const [form, setForm] = useState({ memberId: "", bookId: "" });
+  const idRegex = /^\d+$/;
 
   const mergedIssues = useMemo(() => {
     return issues.map((issue) => {
-      const book = books.find((item) => item.book_id === issue.book_id);
-      const member = members.find((item) => item.user_id === issue.member_id);
+      const book = books.find((item) => item.bookId === issue.bookId);
+      const member = members.find((item) => item.userId === issue.memberId);
       return {
         ...issue,
         bookTitle: book?.title || "Unknown",
@@ -50,14 +51,23 @@ const LibrarianIssues = () => {
   }, []);
 
   const handleIssue = async () => {
-    const selectedBook = books.find((book) => book.book_id === Number(form.book_id));
+    if (!idRegex.test(String(form.memberId)) || !idRegex.test(String(form.bookId))) {
+      addToast({
+        title: "Missing selection",
+        message: "Select both a member and a book.",
+        tone: "error"
+      });
+      return;
+    }
+
+    const selectedBook = books.find((book) => book.bookId === Number(form.bookId));
     if (!selectedBook?.availability) {
       addToast({ title: "Book unavailable", tone: "error" });
       return;
     }
 
     const activeCount = issues.filter(
-      (issue) => issue.member_id === Number(form.member_id) && !issue.return_date
+      (issue) => issue.memberId === Number(form.memberId) && !issue.returnDate
     ).length;
 
     if (activeCount >= 3) {
@@ -66,32 +76,32 @@ const LibrarianIssues = () => {
     }
 
     const issue = await issueService.issueBook({
-      book_id: Number(form.book_id),
-      member_id: Number(form.member_id),
-      issued_by: user.user_id
+      bookId: Number(form.bookId),
+      memberId: Number(form.memberId),
+      issuedById: user.userId
     });
 
     setIssues((prev) => [issue, ...prev]);
     setBooks((prev) =>
       prev.map((book) =>
-        book.book_id === issue.book_id ? { ...book, availability: false } : book
+        book.bookId === issue.bookId ? { ...book, availability: false } : book
       )
     );
     addToast({ title: "Book issued", tone: "success" });
     setOpen(false);
-    setForm({ member_id: "", book_id: "" });
+    setForm({ memberId: "", bookId: "" });
   };
 
   const handleReturn = async (issue) => {
-    await issueService.returnBook(issue.issue_id);
+    await issueService.returnBook(issue.issueId);
     setIssues((prev) =>
       prev.map((item) =>
-        item.issue_id === issue.issue_id ? { ...item, return_date: new Date().toISOString() } : item
+        item.issueId === issue.issueId ? { ...item, returnDate: new Date().toISOString() } : item
       )
     );
     setBooks((prev) =>
       prev.map((book) =>
-        book.book_id === issue.book_id ? { ...book, availability: true } : book
+        book.bookId === issue.bookId ? { ...book, availability: true } : book
       )
     );
     addToast({ title: "Book returned", tone: "success" });
@@ -148,16 +158,16 @@ const LibrarianIssues = () => {
           <div>
             <label className="text-xs uppercase tracking-[0.3em] text-slate-400">Member</label>
             <select
-              value={form.member_id}
+              value={form.memberId}
               onChange={(event) =>
-                setForm((prev) => ({ ...prev, member_id: event.target.value }))
+                setForm((prev) => ({ ...prev, memberId: event.target.value }))
               }
               className="mt-2 w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-sm"
               required
             >
               <option value="">Select member</option>
               {members.map((member) => (
-                <option key={member.user_id} value={member.user_id}>
+                <option key={member.userId} value={member.userId}>
                   {member.name}
                 </option>
               ))}
@@ -166,14 +176,14 @@ const LibrarianIssues = () => {
           <div>
             <label className="text-xs uppercase tracking-[0.3em] text-slate-400">Book</label>
             <select
-              value={form.book_id}
-              onChange={(event) => setForm((prev) => ({ ...prev, book_id: event.target.value }))}
+              value={form.bookId}
+              onChange={(event) => setForm((prev) => ({ ...prev, bookId: event.target.value }))}
               className="mt-2 w-full rounded-xl bg-slate-950 border border-slate-800 px-4 py-3 text-sm"
               required
             >
               <option value="">Select book</option>
               {books.map((book) => (
-                <option key={book.book_id} value={book.book_id}>
+                <option key={book.bookId} value={book.bookId}>
                   {book.title} {book.availability ? "" : "(issued)"}
                 </option>
               ))}

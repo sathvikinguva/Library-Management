@@ -7,7 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-@Component
+// @Component - Disabled: No default data seeding
 public class DataSeeder implements CommandLineRunner {
 
     private final UserRepository userRepository;

@@ -10,6 +10,8 @@ const Login = () => {
   const { addToast } = useToast();
   const [form, setForm] = useState({ email: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  const passwordRegex = /^(?=.*[A-Za-z]).{6,}$/;
 
   const handleChange = (event) => {
     setForm((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -17,9 +19,28 @@ const Login = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const email = form.email.trim();
+    const password = form.password;
+    if (!emailRegex.test(email)) {
+      addToast({
+        title: "Invalid email",
+        message: "Use a valid email address.",
+        tone: "error"
+      });
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      addToast({
+        title: "Invalid password",
+        message: "Password must be at least 6 characters.",
+        tone: "error"
+      });
+      return;
+    }
     setSubmitting(true);
     try {
-      const user = await login(form);
+      const user = await login({ email, password });
       const destination =
         user.role === "LIBRARIAN" ? ROUTES.librarian.dashboard : ROUTES.member.dashboard;
       addToast({ title: "Welcome back", message: `${user.name} signed in`, tone: "success" });
@@ -52,6 +73,8 @@ const Login = () => {
             onChange={handleChange}
             className="mt-2 w-full rounded-xl bg-slate-900 border border-slate-800 px-4 py-3 text-sm text-white"
             placeholder="librarian@lib.com"
+            pattern={emailRegex.source}
+            title="Enter a valid email address"
             required
           />
         </div>
@@ -64,6 +87,8 @@ const Login = () => {
             onChange={handleChange}
             className="mt-2 w-full rounded-xl bg-slate-900 border border-slate-800 px-4 py-3 text-sm text-white"
             placeholder="********"
+            pattern={passwordRegex.source}
+            title="At least 6 characters"
             required
           />
         </div>

@@ -10,6 +10,7 @@ import com.librarymanagement.backend.exception.BusinessException;
 import com.librarymanagement.backend.exception.ResourceNotFoundException;
 import com.librarymanagement.backend.repository.IssueRecordRepository;
 import com.librarymanagement.backend.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,10 +21,14 @@ public class MemberService {
 
     private final UserRepository userRepository;
     private final IssueRecordRepository issueRecordRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public MemberService(UserRepository userRepository, IssueRecordRepository issueRecordRepository) {
+    public MemberService(UserRepository userRepository,
+                         IssueRecordRepository issueRecordRepository,
+                         PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.issueRecordRepository = issueRecordRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public MemberResponseDto registerMember(MemberRequestDto dto) {
@@ -33,7 +38,7 @@ public class MemberService {
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRole(Role.MEMBER);
         return toDto(userRepository.save(user));
     }
@@ -51,6 +56,12 @@ public class MemberService {
 
     public User getUserEntityById(Integer userId) {
         return findById(userId);
+    }
+
+    public List<MemberResponseDto> getAllMembers() {
+        return userRepository.findByRole(Role.MEMBER).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     private User findById(Integer userId) {

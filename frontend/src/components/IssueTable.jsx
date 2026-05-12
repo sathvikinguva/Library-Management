@@ -15,12 +15,12 @@ const IssueTable = ({ issues, onReturn }) => {
         </thead>
         <tbody className="divide-y divide-slate-800 bg-slate-900/30">
           {issues.map((issue) => (
-            <tr key={issue.issue_id} className="hover:bg-slate-900/60">
+            <tr key={issue.issueId} className="hover:bg-slate-900/60">
               <td className="px-5 py-4 text-white">{issue.bookTitle}</td>
               <td className="px-5 py-4 text-slate-300">{issue.memberName}</td>
-              <td className="px-5 py-4 text-slate-300">{formatDate(issue.issue_date)}</td>
+              <td className="px-5 py-4 text-slate-300">{formatDate(issue.issueDate)}</td>
               <td className="px-5 py-4 text-slate-300">
-                {issue.return_date ? formatDate(issue.return_date) : "Pending"}
+                {issue.returnDate ? formatDate(issue.returnDate) : "Pending"}
               </td>
               {onReturn && (
                 <td className="px-5 py-4">
