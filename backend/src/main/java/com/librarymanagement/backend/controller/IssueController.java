@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/issues")
 public class IssueController {
@@ -26,5 +28,10 @@ public class IssueController {
     @PutMapping("/return/{issueId}")
     public ResponseEntity<IssueResponseDto> returnBook(@PathVariable Integer issueId) {
         return ResponseEntity.ok(issueService.returnBook(issueId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<IssueResponseDto>> getAllIssues() {
+        return ResponseEntity.ok(issueService.getAllIssues());
     }
 }

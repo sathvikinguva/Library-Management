@@ -12,7 +12,7 @@ const MemberTable = ({ members, onSelect }) => {
         <tbody className="divide-y divide-slate-800 bg-slate-900/30">
           {members.map((member) => (
             <tr
-              key={member.user_id}
+              key={member.userId}
               onClick={() => onSelect(member)}
               className="cursor-pointer hover:bg-slate-900/60"
             >

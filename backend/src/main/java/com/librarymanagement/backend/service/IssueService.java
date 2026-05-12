@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class IssueService {
@@ -78,6 +80,12 @@ public class IssueService {
         bookRepository.save(book);
 
         return toDto(record);
+    }
+
+    public List<IssueResponseDto> getAllIssues() {
+        return issueRecordRepository.findAll().stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     private IssueResponseDto toDto(IssueRecord record) {

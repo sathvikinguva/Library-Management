@@ -9,6 +9,7 @@ const MemberBooks = () => {
   const [books, setBooks] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const searchRegex = /^[A-Za-z0-9\s.'-]*$/;
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -38,13 +39,18 @@ const MemberBooks = () => {
           <h3 className="text-xl font-display text-white">Book catalog</h3>
           <p className="text-sm text-slate-400">Browse and search the full collection.</p>
         </div>
-        <SearchBar value={search} onChange={setSearch} placeholder="Find a title" />
+        <SearchBar
+          value={search}
+          onChange={setSearch}
+          placeholder="Find a title"
+          validationRegex={searchRegex}
+        />
       </div>
 
       {filtered.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((book) => (
-            <BookCard key={book.book_id} book={book} />
+            <BookCard key={book.bookId} book={book} />
           ))}
         </div>
       ) : (

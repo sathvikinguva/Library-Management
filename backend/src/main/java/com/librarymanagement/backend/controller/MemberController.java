@@ -35,4 +35,9 @@ public class MemberController {
     public ResponseEntity<List<IssueResponseDto>> getMemberIssues(@PathVariable Integer id) {
         return ResponseEntity.ok(memberService.getBooksIssuedToMember(id));
     }
+
+    @GetMapping
+    public ResponseEntity<List<MemberResponseDto>> getAllMembers() {
+        return ResponseEntity.ok(memberService.getAllMembers());
+    }
 }

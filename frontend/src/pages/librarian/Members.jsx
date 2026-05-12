@@ -35,7 +35,7 @@ const LibrarianMembers = () => {
     return members.map((member) => ({
       ...member,
       activeCount: issues.filter(
-        (issue) => issue.member_id === member.user_id && !issue.return_date
+        (issue) => issue.memberId === member.userId && !issue.returnDate
       ).length
     }));
   }, [members, issues]);
@@ -43,9 +43,9 @@ const LibrarianMembers = () => {
   const memberIssues = useMemo(() => {
     if (!selected) return [];
     return issues
-      .filter((issue) => issue.member_id === selected.user_id)
+      .filter((issue) => issue.memberId === selected.userId)
       .map((issue) => {
-        const book = books.find((item) => item.book_id === issue.book_id);
+        const book = books.find((item) => item.bookId === issue.bookId);
         return {
           ...issue,
           bookTitle: book?.title || "Unknown",
