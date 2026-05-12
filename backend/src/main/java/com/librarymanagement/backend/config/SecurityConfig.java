@@ -29,10 +29,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/swagger-ui/**", "/v3/api-docs/**", "/h2-console/**")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
+                    .requestMatchers("/login", "/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
